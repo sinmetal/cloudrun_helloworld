@@ -1,0 +1,46 @@
+name: "deploy"
+on:
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Check for Command"
+        id: command
+        uses: xt0rted/slash-command-action@065da288bcfe24ff96b3364c7aac1f6dca0fb027 #1.1.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          command: deploy
+          reaction: "true"
+          reaction-type: "eyes"
+
+      - name: "Get branch name"
+        uses: xt0rted/pull-request-comment-branch@29fe0354c01b30fb3de76f193ab33abf8fe5ddb0 #1.2.0
+        id: comment-branch
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Checkout"
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.get_branch.outputs.head_ref }}
+
+      - name: "Post Comment"
+        uses: actions/github-script@v3
+        env:
+          MESSAGE: |
+            デプロイを開始しました (名前:${{ steps.command.outputs.command-name }}, 引数:${{ steps.command.outputs.command-arguments }})
+            ブランチ: ${{ steps.comment-branch.outputs.head_ref }}
+            SHA: ${{ steps.comment-branch.outputs.head_sha }}
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: process.env.MESSAGE
+            })

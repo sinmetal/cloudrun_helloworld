@@ -4,10 +4,22 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	cloudrunmetadatabox "github.com/sinmetalcraft/gcpbox/metadata/cloudrun"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, World")
+	service, err := cloudrunmetadatabox.Service()
+	if err != nil {
+		log.Println(err)
+	}
+
+	revision, err := cloudrunmetadatabox.Revision()
+	if err != nil {
+		log.Println(err)
+	}
+
+	fmt.Fprintf(w, "Hello! %s.%s", service, revision)
 }
 
 func main() {
