@@ -1,0 +1,33 @@
+name: "deploy-debug"
+on:
+  push
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+      issues: 'write'
+      checks: 'write'
+      pull-requests: 'write'
+      statuses: 'write'
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.get_branch.outputs.head_ref }}
+      - name: "Google Auth"
+        uses: "google-github-actions/auth@v0"
+        env:
+          GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
+          PROJECT_NUMBER: ${{ secrets.PROJECT_NUMBER }}
+        with:
+          workload_identity_provider: "projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-actions/providers/gha-provider"
+          service_account: "github@$GCP_PROJECT.iam.gserviceaccount.com"
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v0'
+        with:
+          version: '369.0.0'
+      - name: 'Use gcloud CLI'
+        run: 'gcloud info'
