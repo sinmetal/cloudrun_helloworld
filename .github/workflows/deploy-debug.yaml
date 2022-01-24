@@ -21,8 +21,8 @@ jobs:
           GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
           PROJECT_NUMBER: ${{ secrets.PROJECT_NUMBER }}
         with:
-          workload_identity_provider: "projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-actions/providers/gha-provider"
-          service_account: "github@$GCP_PROJECT.iam.gserviceaccount.com"
+          workload_identity_provider: "projects/1082613182030/locations/global/workloadIdentityPools/github-actions/providers/gha-provider"
+          service_account: "github@kouzoh-p-sinmetal.iam.gserviceaccount.com"
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v0'
         with:
