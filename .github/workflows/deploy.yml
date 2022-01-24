@@ -61,9 +61,11 @@ jobs:
           service_account: "github@$GCP_PROJECT.iam.gserviceaccount.com"
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v0'
-
+        with:
+          version: '369.0.0'
       - name: 'Use gcloud CLI'
         run: 'gcloud info'
+
       - name: "Deploy to Run"
         uses: "google-github-actions/deploy-cloudrun@v0"
         env:
