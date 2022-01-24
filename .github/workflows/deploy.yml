@@ -39,9 +39,9 @@ jobs:
         uses: actions/github-script@v3
         env:
           MESSAGE: |
-            デプロイを開始しました (名前:${{ steps.command.outputs.command-name }}, 引数:${{ steps.command.outputs.command-arguments }})
-            ブランチ: ${{ steps.comment-branch.outputs.head_ref }}
-            SHA: ${{ steps.comment-branch.outputs.head_sha }}
+            Start Deploy to ${{ steps.command.outputs.command-arguments }}
+            Branch: ${{ steps.comment-branch.outputs.head_ref }}
+            Commit: ${{ steps.comment-branch.outputs.head_sha }}
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -78,9 +78,9 @@ jobs:
         uses: actions/github-script@v3
         env:
           MESSAGE: |
-            デプロイが完了しました (名前:${{ steps.command.outputs.command-name }}, 引数:${{ steps.command.outputs.command-arguments }})
-            ブランチ: ${{ steps.comment-branch.outputs.head_ref }}
-            SHA: ${{ steps.comment-branch.outputs.head_sha }}
+            Finish Deploy to ${{ steps.command.outputs.command-arguments }}
+            Branch: ${{ steps.comment-branch.outputs.head_ref }}
+            Commit: ${{ steps.comment-branch.outputs.head_sha }}
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
