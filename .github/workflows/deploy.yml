@@ -18,6 +18,7 @@ jobs:
           command: deploy
           reaction: "true"
           reaction-type: "eyes"
+          allow-edits: "true"
 
       - name: "Get branch name"
         uses: xt0rted/pull-request-comment-branch@29fe0354c01b30fb3de76f193ab33abf8fe5ddb0 #1.2.0
