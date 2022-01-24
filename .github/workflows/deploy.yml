@@ -64,6 +64,7 @@ jobs:
         run: 'gcloud info'
 
       - name: "Deploy to Run"
+        id: "deploy-to-run"
         uses: "google-github-actions/deploy-cloudrun@v0"
         with:
           service: "cloudrun-helloworld"
@@ -71,8 +72,8 @@ jobs:
           region: "asia-northeast1"
           tag: ${{ steps.command.outputs.command-arguments }}
           no_traffic: "true"
-      - name: "Use output"
-        run: 'curl "${{ steps.deploy.outputs.url }}"'
+      - name: "Output Cloud Run URL"
+        run: 'curl "${{ steps.deploy-to-run.outputs.url }}"'
       - name: "Post Comment"
         uses: actions/github-script@v3
         env:
