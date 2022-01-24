@@ -46,7 +46,7 @@ jobs:
               repo: context.repo.repo,
               body: process.env.MESSAGE
             })
-      - id: "auth"
+      - name: "Google Auth"
         uses: "google-github-actions/auth@v0"
         env:
           PROJECT_ID: ${{ secrets.PROJECT_ID }}
@@ -54,7 +54,7 @@ jobs:
         with:
           workload_identity_provider: "projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-actions/providers/gha-provider"
           service_account: "github@$PROJECT_ID.iam.gserviceaccount.com"
-      - id: "deploy"
+      - name: "Deploy to Run"
         uses: "google-github-actions/deploy-cloudrun@v0"
         env:
           PROJECT_ID: ${{ secrets.PROJECT_ID }}
@@ -65,3 +65,19 @@ jobs:
           tag: ${{ steps.command.outputs.command-arguments }}
       - name: "Use output"
         run: 'curl "${{ steps.deploy.outputs.url }}"'
+      - name: "Post Comment"
+        uses: actions/github-script@v3
+        env:
+          MESSAGE: |
+            デプロイが完了しました (名前:${{ steps.command.outputs.command-name }}, 引数:${{ steps.command.outputs.command-arguments }})
+            ブランチ: ${{ steps.comment-branch.outputs.head_ref }}
+            SHA: ${{ steps.comment-branch.outputs.head_sha }}
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: process.env.MESSAGE
+            })
