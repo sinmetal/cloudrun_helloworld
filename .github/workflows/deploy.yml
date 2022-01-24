@@ -68,6 +68,7 @@ jobs:
           image: "asia-northeast1-docker.pkg.dev/$GCP_PROJECT/cloudrun-helloworld/${{ steps.comment-branch.outputs.head_ref }}:${{ steps.comment-branch.outputs.head_sha }}"
           region: "asia-northeast1"
           tag: ${{ steps.command.outputs.command-arguments }}
+          no_traffic: "true"
       - name: "Use output"
         run: 'curl "${{ steps.deploy.outputs.url }}"'
       - name: "Post Comment"
