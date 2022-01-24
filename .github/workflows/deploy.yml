@@ -10,6 +10,9 @@ jobs:
       contents: 'read'
       id-token: 'write'
       issues: 'write'
+      checks: 'write'
+      pull-requests: 'write'
+      statuses: 'write'
     steps:
       - name: "Check for Command"
         id: command
