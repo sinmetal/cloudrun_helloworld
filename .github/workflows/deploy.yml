@@ -59,6 +59,11 @@ jobs:
         with:
           workload_identity_provider: "projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-actions/providers/gha-provider"
           service_account: "github@$GCP_PROJECT.iam.gserviceaccount.com"
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v0'
+
+      - name: 'Use gcloud CLI'
+        run: 'gcloud info'
       - name: "Deploy to Run"
         uses: "google-github-actions/deploy-cloudrun@v0"
         env:
