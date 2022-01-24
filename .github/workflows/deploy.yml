@@ -53,12 +53,9 @@ jobs:
             })
       - name: "Google Auth"
         uses: "google-github-actions/auth@v0"
-        env:
-          GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
-          PROJECT_NUMBER: ${{ secrets.PROJECT_NUMBER }}
         with:
-          workload_identity_provider: "projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-actions/providers/gha-provider"
-          service_account: "github@$GCP_PROJECT.iam.gserviceaccount.com"
+          workload_identity_provider: "projects/${{ secrets.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-actions/providers/gha-provider"
+          service_account: "github@${{ secrets.GCP_PROJECT }}.iam.gserviceaccount.com"
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v0'
         with:
@@ -68,11 +65,9 @@ jobs:
 
       - name: "Deploy to Run"
         uses: "google-github-actions/deploy-cloudrun@v0"
-        env:
-          GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
         with:
           service: "cloudrun-helloworld"
-          image: "asia-northeast1-docker.pkg.dev/$GCP_PROJECT/cloudrun-helloworld/${{ steps.comment-branch.outputs.head_ref }}:${{ steps.comment-branch.outputs.head_sha }}"
+          image: "asia-northeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/cloudrun-helloworld/${{ steps.comment-branch.outputs.head_ref }}:${{ steps.comment-branch.outputs.head_sha }}"
           region: "asia-northeast1"
           tag: ${{ steps.command.outputs.command-arguments }}
           no_traffic: "true"
