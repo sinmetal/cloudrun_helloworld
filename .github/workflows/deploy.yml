@@ -9,6 +9,10 @@ jobs:
     permissions:
       contents: 'read'
       id-token: 'write'
+      issues: 'write'
+      checks: 'write'
+      pull-requests: 'write'
+      statuses: 'write'
     steps:
       - name: "Check for Command"
         id: command
@@ -18,6 +22,7 @@ jobs:
           command: deploy
           reaction: "true"
           reaction-type: "eyes"
+          allow-edits: "true"
 
       - name: "Get branch name"
         uses: xt0rted/pull-request-comment-branch@29fe0354c01b30fb3de76f193ab33abf8fe5ddb0 #1.2.0
@@ -34,9 +39,9 @@ jobs:
         uses: actions/github-script@v3
         env:
           MESSAGE: |
-            デプロイを開始しました (名前:${{ steps.command.outputs.command-name }}, 引数:${{ steps.command.outputs.command-arguments }})
-            ブランチ: ${{ steps.comment-branch.outputs.head_ref }}
-            SHA: ${{ steps.comment-branch.outputs.head_sha }}
+            Start Deploy to ${{ steps.command.outputs.command-arguments }}
+            Branch: ${{ steps.comment-branch.outputs.head_ref }}
+            Commit: ${{ steps.comment-branch.outputs.head_sha }}
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -48,30 +53,34 @@ jobs:
             })
       - name: "Google Auth"
         uses: "google-github-actions/auth@v0"
-        env:
-          PROJECT_ID: ${{ secrets.PROJECT_ID }}
-          PROJECT_NUMBER: ${{ secrets.PROJECT_NUMBER }}
         with:
-          workload_identity_provider: "projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-actions/providers/gha-provider"
-          service_account: "github@$PROJECT_ID.iam.gserviceaccount.com"
+          workload_identity_provider: "projects/${{ secrets.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-actions/providers/gha-provider"
+          service_account: "github@${{ secrets.GCP_PROJECT }}.iam.gserviceaccount.com"
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v0'
+        with:
+          version: '369.0.0'
+      - name: 'Use gcloud CLI'
+        run: 'gcloud info'
+
       - name: "Deploy to Run"
+        id: "deploy-to-run"
         uses: "google-github-actions/deploy-cloudrun@v0"
-        env:
-          PROJECT_ID: ${{ secrets.PROJECT_ID }}
         with:
           service: "cloudrun-helloworld"
-          image: "asia-northeast1-docker.pkg.dev/$PROJECT_ID/cloudrun-helloworld/${{ steps.comment-branch.outputs.head_ref }}:${{ steps.comment-branch.outputs.head_sha }}"
+          image: "asia-northeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/cloudrun-helloworld/${{ steps.comment-branch.outputs.head_ref }}:${{ steps.comment-branch.outputs.head_sha }}"
           region: "asia-northeast1"
           tag: ${{ steps.command.outputs.command-arguments }}
-      - name: "Use output"
-        run: 'curl "${{ steps.deploy.outputs.url }}"'
+          no_traffic: "true"
+      - name: "Output Cloud Run URL"
+        run: 'curl "${{ steps.deploy-to-run.outputs.url }}"'
       - name: "Post Comment"
         uses: actions/github-script@v3
         env:
           MESSAGE: |
-            デプロイが完了しました (名前:${{ steps.command.outputs.command-name }}, 引数:${{ steps.command.outputs.command-arguments }})
-            ブランチ: ${{ steps.comment-branch.outputs.head_ref }}
-            SHA: ${{ steps.comment-branch.outputs.head_sha }}
+            Finish Deploy to ${{ steps.command.outputs.command-arguments }}
+            Branch: ${{ steps.comment-branch.outputs.head_ref }}
+            Commit: ${{ steps.comment-branch.outputs.head_sha }}
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
