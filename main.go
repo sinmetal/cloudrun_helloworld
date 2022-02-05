@@ -19,6 +19,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 
+	for k, v := range r.Header {
+		log.Printf("%s:%v\n", k, v)
+	}
+
 	fmt.Fprintf(w, "Hello! %s.%s", service, revision)
 }
 
