@@ -30,4 +30,9 @@ jobs:
       - name: 'Use gcloud CLI'
         run: 'gcloud info'
       - name: 'cloud build submit'
-        run: 'gcloud builds submit --gcs-log-dir gs://${{ secrets.GCP_PROJECT }}_cloudbuild/log --config cloudbuild.yaml'
+        run: |-
+          gcloud builds submit 
+          --gcs-source-staging-dir gs://${{ secrets.GCP_PROJECT }}_cloudbuild/source 
+          --gcs-log-dir gs://${{ secrets.GCP_PROJECT }}_cloudbuild/log 
+          --substitutions _BRANCH_NAME=${{ steps.branch.outputs.GIT_BRANCH }},_COMMIT_SHA=${{ github.sha }}
+          --config cloudbuild.yaml'
