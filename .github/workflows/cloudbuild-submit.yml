@@ -34,5 +34,5 @@ jobs:
           gcloud builds submit 
           --gcs-source-staging-dir gs://${{ secrets.GCP_PROJECT }}_cloudbuild/source 
           --gcs-log-dir gs://${{ secrets.GCP_PROJECT }}_cloudbuild/log 
-          --substitutions _BRANCH_NAME=${{ steps.extract_branch.outputs.branch }},_COMMIT_SHA=${{ github.sha }}
+          --substitutions _BRANCH_NAME=$GITHUB_REF,_COMMIT_SHA=${{ github.sha }}
           --config cloudbuild.yaml'
