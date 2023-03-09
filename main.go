@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	cloudrunmetadatabox "github.com/sinmetalcraft/gcpbox/metadata/cloudrun"
 )
@@ -25,10 +26,21 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responseStatus := r.FormValue("responseStatus")
+	waitSecond := r.FormValue("waitSecond")
+	if waitSecond != "" {
+		sec, err := strconv.ParseInt(waitSecond, 10, 32)
+		if err != nil {
+			fmt.Fprintf(w, "Hello! %s.%s. invalid waitSecond.err=%s", service, revision, err)
+			return
+		}
+		log.Printf("wait second:%d", sec)
+		time.Sleep(time.Duration(sec) * time.Second)
+	}
+
 	if responseStatus != "" {
 		sts, err := strconv.ParseInt(responseStatus, 10, 32)
 		if err != nil {
-			fmt.Fprintf(w, "Hello! %s.%s.err=%s", service, revision, err)
+			fmt.Fprintf(w, "Hello! %s.%s.invalid responseStatus.err=%s", service, revision, err)
 			return
 		}
 		w.WriteHeader(int(sts))
