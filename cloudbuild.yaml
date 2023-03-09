@@ -1,7 +1,7 @@
 steps:
   - name: 'golang:1.20-bullseye'
     entrypoint: 'go'
-    args: ['build', '-o', 'app', './cmd/server']
+    args: ['build', '-o', 'app', '.']
     env: ['CGO_ENABLED=0']
   - name: 'gcr.io/kaniko-project/executor:v1.9.1'
     args:
