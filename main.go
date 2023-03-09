@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	cloudrunmetadatabox "github.com/sinmetalcraft/gcpbox/metadata/cloudrun"
 )
@@ -21,6 +22,16 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 	for k, v := range r.Header {
 		log.Printf("%s:%v\n", k, v)
+	}
+
+	responseStatus := r.FormValue("responseStatus")
+	if responseStatus != "" {
+		sts, err := strconv.ParseInt(responseStatus, 10, 32)
+		if err != nil {
+			fmt.Fprintf(w, "Hello! %s.%s.err=%s", service, revision, err)
+			return
+		}
+		w.WriteHeader(int(sts))
 	}
 
 	fmt.Fprintf(w, "Hello! %s.%s", service, revision)
