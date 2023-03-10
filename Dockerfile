@@ -1,5 +1,3 @@
-FROM alpine:3.13
-RUN apk add --no-cache ca-certificates
-RUN mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
-COPY ./cloudrun_helloworld /cloudrun_helloworld
-ENTRYPOINT ["/cloudrun_helloworld"]
+FROM gcr.io/distroless/static-debian11
+COPY ./app /app
+ENTRYPOINT ["/app"]
