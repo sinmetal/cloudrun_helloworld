@@ -51,6 +51,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	log.Println("Start Hello World Server")
+
+	iapHandler := &IAPHandler{}
+
+	http.HandleFunc("/iap", iapHandler.Handle)
 	http.HandleFunc("/", handler)
 	http.ListenAndServe(":8080", nil)
 }
