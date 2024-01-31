@@ -14,6 +14,7 @@ type IAPHandler struct {
 }
 
 func (h *IAPHandler) Handle(w http.ResponseWriter, r *http.Request) {
+	const backendServiceID = "8877965452879686025"
 	iapJWT := r.Header.Get("x-goog-iap-jwt-assertion")
 	projectNumber, err := metadatabox.NumericProjectID()
 	if err != nil {
@@ -23,6 +24,11 @@ func (h *IAPHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(iapJWT)
 	fmt.Println(projectNumber)
+	if err := validateJWTFromComputeEngine(w, iapJWT, projectNumber, backendServiceID); err != nil {
+		fmt.Println(err)
+		http.Error(w, err.Error(), http.StatusForbidden)
+		return
+	}
 }
 
 // validateJWTFromComputeEngine validates a JWT found in the
